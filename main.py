@@ -1,24 +1,25 @@
 import requests
-import random
 
 API_URL = "https://zenquotes.io/api/random"
 
-def get_quotes():
+def get_quote():
     response = requests.get(API_URL, timeout=5)
     response.raise_for_status()
-    return response.json()
-
-def get_random_quote(quotes):
-    return random.choice(quotes)
+    data = response.json()
+    if isinstance(data, list) and data:
+        return data[0]
+    raise ValueError("No quote found in response.")
 
 def main():
     print("✨ Daily Inspiration ✨\n")
     try:
-        quotes = get_quotes()
-        quote = get_random_quote(quotes)
-        print(f"\"{quote['q']}\" — {quote.get('a', 'Unknown')}")
+        quote = get_quote()
+        print(f"\"{quote['q']}\"")
+        print(f"   — {quote.get('a', 'Unknown')}")
+        print("-" * 40)
     except Exception as e:
-        print("Error fetching quote:", e)
+        print("Sorry, couldn't fetch a quote right now.")
+        print("Details:", e)
 
 if __name__ == "__main__":
     main()
